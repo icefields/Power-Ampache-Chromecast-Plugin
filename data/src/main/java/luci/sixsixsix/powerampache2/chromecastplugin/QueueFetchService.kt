@@ -1,0 +1,35 @@
+package luci.sixsixsix.powerampache2.chromecastplugin
+
+import android.app.Service
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import android.os.Messenger
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import luci.sixsixsix.powerampache2.chromecastplugin.domain.MusicFetcher
+import luci.sixsixsix.powerampache2.chromecastplugin.domain.common.KEY_REQUEST_JSON
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class QueueFetchService : Service() {
+    @Inject lateinit var musicFetcher: MusicFetcher
+    @Inject lateinit var applicationCoroutineScope: CoroutineScope
+
+    private val messenger = Messenger(object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            val requestStr = msg.data.getString(KEY_REQUEST_JSON) ?: return
+            musicFetcher.getQueue(requestStr)
+
+            val replyTo = msg.replyTo ?: return
+            replyTo.send(Message.obtain().apply { Bundle().apply { putBoolean("success", true) } })
+        }
+    })
+
+    override fun onBind(intent: Intent?): IBinder {
+        return messenger.binder
+    }
+}
