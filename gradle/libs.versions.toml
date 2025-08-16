@@ -10,14 +10,15 @@ material = "1.12.0"
 gson = "2.13.1"
 hiltAndroid = "2.56.2"
 hiltVersion = "1.2.0"
-lifecycleVersion = "2.9.1"
-materialVersion = "1.8.3"
+lifecycleVersion = "2.9.2"
+materialVersion = "1.9.0"
 okhttpVersion = "4.12.0" #"5.0.0-alpha.14"
 playServicesCastFramework = "22.1.0"
 retrofit = "2.11.0"
-composeVersion = "1.8.3"
+composeVersion = "1.9.0"
 activityCompose = "1.10.1"
 roomVersion = "2.7.2"
+coilCompose = "2.7.0"
 
 ksp = "2.1.21-2.0.2"
 
@@ -35,6 +36,7 @@ compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref 
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
 # --- Dagger-Hilt --- #
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroid" }

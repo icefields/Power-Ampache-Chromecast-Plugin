@@ -22,7 +22,7 @@ class QueueFetchService : Service() {
     private val messenger = Messenger(object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             val requestStr = msg.data.getString(KEY_REQUEST_JSON) ?: return
-            musicFetcher.getQueue(requestStr)
+            musicFetcher.parseQueue(requestStr)
 
             val replyTo = msg.replyTo ?: return
             replyTo.send(Message.obtain().apply { Bundle().apply { putBoolean("success", true) } })

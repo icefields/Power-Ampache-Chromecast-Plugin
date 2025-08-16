@@ -15,6 +15,6 @@ class MusicFetcherImpl @Inject constructor(): MusicFetcher {
     override val currentQueueFlow: StateFlow<List<Song>> = _currentQueueFlow
     private val gson = Gson()
 
-    override fun getQueue(responseStr: String): List<Song> =
+    override fun parseQueue(responseStr: String): List<Song> =
         gson.fromJson(responseStr, QueueDto::class.java).queue.also { _currentQueueFlow.value = it }
 }

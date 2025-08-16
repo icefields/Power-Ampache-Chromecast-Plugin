@@ -52,6 +52,9 @@ dependencies {
     implementation(libs.androidx.activity.compose) // Required for setContent
     implementation(libs.androidx.material)
 
+
+    // --- Coil, image-loader --- //
+    implementation(libs.coil.compose)
 //    implementation("androidx.lifecycle:lifecycle-service:2.9.1")
 
     // --- Dagger Hilt --- //
