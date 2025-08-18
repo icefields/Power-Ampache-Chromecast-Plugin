@@ -14,7 +14,7 @@ android {
         applicationId = "luci.sixsixsix.powerampache2.chromecastplugin"
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.compose.lifecycle.viewmodel)
     implementation(libs.androidx.activity.compose) // Required for setContent
     implementation(libs.androidx.material)
+    implementation(libs.androidx.material.icons.extended)
 
 
     // --- Coil, image-loader --- //

@@ -1,5 +1,6 @@
 package luci.sixsixsix.powerampache2.chromecastplugin.domain.common
 
+const val defaultContentType: String = "audio/mp3"
 const val KEY_REQUEST_SONG_TITLE = "songTitle"
 const val KEY_REQUEST_ALBUM_TITLE = "albumTitle"
 const val KEY_REQUEST_ARTIST_NAME = "artistName"

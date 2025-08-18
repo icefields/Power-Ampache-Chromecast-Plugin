@@ -1,56 +1,67 @@
 package luci.sixsixsix.powerampache2.chromecastplugin.presentation
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.view.LayoutInflater
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.primarySurface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.mediarouter.app.MediaRouteButton
 import coil.compose.AsyncImage
 import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.material.appbar.MaterialToolbar
 import luci.sixsixsix.powerampache2.chromecastplugin.R
 
 val mainFontSize = 16.sp
 val smallFontSize = 12.sp
 val screenPadding
     @Composable get() = dimensionResource(R.dimen.screen_padding)
+
+val surfaceVariantLight = Color(0xFFDFE5E3)
 
 @Composable
 fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
@@ -60,10 +71,11 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
     Scaffold(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()),
+            .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding())
+            .padding(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()),
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colors.primary,
+                //backgroundColor = MaterialTheme.colors.primary,
                 title = {
                     Text(
                         text = stringResource(R.string.app_name_topBar),
@@ -71,40 +83,113 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
                         fontStyle = FontStyle.Normal,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
-                        color = MaterialTheme.colors.onPrimary,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = screenPadding).basicMarquee(),
+                        //color = MaterialTheme.colors.onPrimary,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = screenPadding),//.basicMarquee(),
                         textAlign = TextAlign.Start
                     )
                 },
-                actions = { CastActionButton(viewModel.needsConnection()) }
+                actions = {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colors.onSurface,
+                        modifier = Modifier.wrapContentSize()
+                    ) {
+                        CastActionButton(viewModel.needsConnection())
+                    }
+                }
             )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            items(queue.value) { song ->
-                Row(modifier = Modifier.fillMaxWidth()) {
-
-                    AsyncImage(
-                        song.imageUrl,
-                        modifier = Modifier.fillMaxWidth(0.2f),
-                        contentDescription = null
-                    )
+        },
+        bottomBar = {
+            BottomAppBar(
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.onSurface,
+                cutoutShape = null
+            ) {
+                uiState.value.currentSong?.let { currentSong ->
+                    AsyncImage(currentSong.imageUrl, contentDescription = null)
 
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.playSong(song) }
-                            .padding(16.dp)
+                            .weight(1f)
+                            .padding(start = 16.dp),
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(song.name, style = MaterialTheme.typography.subtitle1)
-                        Text(song.artist.name, style = MaterialTheme.typography.body1)
+                        Text(
+                            text = currentSong.name,
+                            style = MaterialTheme.typography.subtitle1,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = currentSong.artist.name,
+                            style = MaterialTheme.typography.body2,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
-                Divider()
+
+
+                IconButton(onClick = { viewModel.prev() }) {
+                    Icon(Icons.Default.SkipPrevious, contentDescription = "Previous")
+                }
+                IconButton(onClick = { viewModel.togglePlayPause() }) {
+                    Icon(
+                        if (uiState.value.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                        contentDescription = if (uiState.value.isPlaying) "Pause" else "Play"
+                    )
+                }
+                IconButton(onClick = { viewModel.next() }) {
+                    Icon(Icons.Default.SkipNext, contentDescription = "Next")
+                }
+            }
+        }
+    ) { padding ->
+
+        if (queue.value.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Empty Queue",
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center)
+
+                Text("Load a queue in Power Ampache 2 to start casting your music",
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center)
+            }
+        }
+
+        LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
+            items(queue.value) { song ->
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .fillMaxWidth()
+                        .background(
+                            if (uiState.value.currentIndex == queue.value.indexOf(song)) {
+                                colorResource(R.color.surfaceVariantDark)
+                            } else { Color.Transparent
+                        })
+                        .clickable { viewModel.playSong(song) }
+                ) {
+                    AsyncImage(
+                        song.imageUrl,
+                        modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f),
+                        contentDescription = null
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(song.name, style = MaterialTheme.typography.body1)
+                        Text(song.artist.name, style = MaterialTheme.typography.caption)
+                    }
+                }
+                //Divider()
             }
         }
     }
@@ -122,27 +207,4 @@ fun CastActionButton(needsConnection: Boolean) {
             }
         }
     )
-}
-
-@Composable
-fun MainTopBar(modifier: Modifier = Modifier) {
-    Column(modifier) {
-        Spacer(Modifier
-            .fillMaxWidth()
-            .height(WindowInsets.systemBars.asPaddingValues().calculateTopPadding())
-            .background(MaterialTheme.colors.onBackground)
-        )
-
-        Spacer(Modifier.Companion.height(screenPadding))
-        Text(
-            text = stringResource(R.string.app_name_topBar),
-            fontSize = 20.sp,
-            fontStyle = FontStyle.Normal,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.onPrimary,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = screenPadding),
-            textAlign = TextAlign.Start
-        )
-        Spacer(Modifier.Companion.height(screenPadding))
-    }
 }
