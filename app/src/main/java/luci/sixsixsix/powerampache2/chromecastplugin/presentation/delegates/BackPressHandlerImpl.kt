@@ -19,11 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package luci.sixsixsix.powerampache2.chromecastplugin.domain.common
+package luci.sixsixsix.powerampache2.chromecastplugin.presentation.delegates
 
-const val defaultContentType: String = "audio/mp3"
-const val KEY_REQUEST_JSON = "json"
-const val KEY_RESPONSE_SUCCESS = "success"
-const val KEY_ACTION = "action"
-const val ERROR_INT = -1
-const val KEY_ID = "id"
+import android.app.Activity
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.FragmentActivity
+import java.lang.ref.WeakReference
+
+class BackPressHandlerImpl(): BackPressHandler {
+    override fun handleOnBackPressed(activity: FragmentActivity) = with(activity) {
+        this.onBackPressedDispatcher.addCallback(this, Pa2CastOnBackPressedCallback(this))
+    }
+}
+
+class Pa2CastOnBackPressedCallback(activity: FragmentActivity): OnBackPressedCallback(true) {
+    val weakActivity: WeakReference<Activity> = WeakReference(activity)
+    override fun handleOnBackPressed() {
+        weakActivity.get()?.moveTaskToBack(true)
+    }
+}

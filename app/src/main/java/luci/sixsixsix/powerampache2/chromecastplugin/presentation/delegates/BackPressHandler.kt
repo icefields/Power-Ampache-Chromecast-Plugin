@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package luci.sixsixsix.powerampache2.chromecastplugin.domain.common
+package luci.sixsixsix.powerampache2.chromecastplugin.presentation.delegates
 
-const val defaultContentType: String = "audio/mp3"
-const val KEY_REQUEST_JSON = "json"
-const val KEY_RESPONSE_SUCCESS = "success"
-const val KEY_ACTION = "action"
-const val ERROR_INT = -1
-const val KEY_ID = "id"
+import androidx.fragment.app.FragmentActivity
+
+interface BackPressHandler {
+    fun handleOnBackPressed(activity: FragmentActivity)
+}

@@ -1,3 +1,24 @@
+/**
+ * Copyright (C) 2025  Antonio Tari
+ *
+ * This file is a part of Power Ampache 2
+ * Ampache Android client application
+ * @author Antonio Tari
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package luci.sixsixsix.powerampache2.chromecastplugin.presentation
 
 import android.content.Context
@@ -13,6 +34,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import luci.sixsixsix.powerampache2.chromecastplugin.ChromecastManager
+import luci.sixsixsix.powerampache2.chromecastplugin.R
 import luci.sixsixsix.powerampache2.chromecastplugin.domain.model.Song
 import luci.sixsixsix.powerampache2.chromecastplugin.domain.usecase.QueueStateFlow
 import javax.inject.Inject
@@ -28,10 +50,6 @@ class ChromecastViewModel @Inject constructor(
 
     val queueStateFlow = queueStateFlowUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
-
-//    private var remoteQueueSize = 0
-//    private val _songStateFlow = MutableStateFlow<Song?>(null)
-//    val songStateFlow: StateFlow<Song?> = _songStateFlow
 
     init {
         updateConnectionStatus()
@@ -63,24 +81,19 @@ class ChromecastViewModel @Inject constructor(
                     currentIndex = index,
                     currentSong = queueStateFlow.value.getOrNull(index)
                 )
-                println("aaaa currentQueueIndexStateFlow ${_uiState.value.currentIndex} ${_uiState.value.currentSong?.name ?: "NULL"}")
             }
         }
 
         // observe queue changes
-        viewModelScope.launch { queueStateFlow.collectLatest { loadQueue() } }
-
-//        viewModelScope.launch {
-//            chromecastManager.remoteQueueSizeStateFlow.collectLatest { newSize ->
-//                if (remoteQueueSize == 0 && newSize > 0) { loadQueue() }
-//                remoteQueueSize = newSize
-//            }
-//        }
+        viewModelScope.launch {
+            queueStateFlow.collectLatest { loadQueue() }
+        }
     }
 
-    private fun checkWarnConnection() = (uiState.value.isConnected == true).also { isConnected ->
-        if (!isConnected) Toast.makeText(context, "Connect to Chromecast before playing music", Toast.LENGTH_LONG).show()
-    }
+    private fun checkWarnConnection() =
+        (uiState.value.isConnected == true).also { isConnected ->
+            if (!isConnected) Toast.makeText(context, R.string.toast_noConnection_warning, Toast.LENGTH_LONG).show()
+        }
 
     /**
      * Start playback at this song by sending the whole queue to Chromecast and
@@ -104,12 +117,9 @@ class ChromecastViewModel @Inject constructor(
         if (!checkWarnConnection()) return
         if (uiState.value.currentSong == null) return
 
-        val isCurrentlyPlaying = uiState.value.isPlaying
-
-        if (isCurrentlyPlaying) {
+        if (uiState.value.isPlaying) {
             chromecastManager.pause()
         } else {
-            println("aaaa togglePlayPause")
             chromecastManager.togglePlayPause()
         }
     }

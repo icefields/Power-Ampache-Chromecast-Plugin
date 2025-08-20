@@ -53,10 +53,13 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.extended)
 
+    // JSON serialization
+    implementation(libs.gson)
+    // Google Cast framework
+    implementation (libs.play.services.cast.framework)
 
     // --- Coil, image-loader --- //
     implementation(libs.coil.compose)
-//    implementation("androidx.lifecycle:lifecycle-service:2.9.1")
 
     // --- Dagger Hilt --- //
     implementation(libs.hilt.android)
@@ -64,19 +67,4 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.common)
-    //implementation(libs.androidx.hilt.work)
-    //implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-
-    // --- Retrofit --- //
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
-    //implementation("com.squareup.retrofit2:converter-moshi:$retrofit2Version")
-
-    // JSON serialization
-    implementation(libs.gson)
-
-    implementation (libs.play.services.cast.framework)
 }
-

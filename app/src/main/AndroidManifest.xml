@@ -30,10 +30,6 @@
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="luci.sixsixsix.powerampache2.chromecastplugin.CastOptionsProvider" />
-
-<!--    <service-->
-<!--        android:name="luci.sixsixsix.powerampache2.infoplugin.InfoFetcherService"-->
-<!--        android:exported="true"/>-->
     </application>
 
 </manifest>

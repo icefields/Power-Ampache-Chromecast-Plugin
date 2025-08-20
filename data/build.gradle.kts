@@ -39,8 +39,6 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.core.ktx)
 
     // --- Dagger Hilt --- //
@@ -49,13 +47,6 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.common)
-    //implementation(libs.androidx.hilt.work)
-
-    // --- Retrofit --- //
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
 
     // JSON serialization
     implementation(libs.gson)

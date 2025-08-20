@@ -1,16 +1,35 @@
+/**
+ * Copyright (C) 2025  Antonio Tari
+ *
+ * This file is a part of Power Ampache 2
+ * Ampache Android client application
+ * @author Antonio Tari
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package luci.sixsixsix.powerampache2.chromecastplugin
 
 import android.content.Context
 import androidx.core.net.toUri
 import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
-import com.google.android.gms.cast.framework.media.MediaQueue
 import com.google.android.gms.cast.framework.media.RemoteMediaClient
 import com.google.android.gms.common.images.WebImage
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,13 +45,10 @@ class ChromecastManager @Inject constructor(@ApplicationContext context: Context
     private val sessionManager by lazy { castContext.sessionManager }
     var onPlaybackStateChanged: ((Boolean) -> Unit)? = null
     var onConnectionStateChanged: ((Boolean) -> Unit)? = null
-    //var onCurrentQueueIndexChanged: ((Int) -> Unit)? = null
 
     private val _currentQueueIndexStateFlow = MutableStateFlow<Int>(0)
     val currentQueueIndexStateFlow: StateFlow<Int> = _currentQueueIndexStateFlow
 
-//    private val _remoteQueueSizeStateFlow = MutableStateFlow<Int>(0)
-//    val remoteQueueSizeStateFlow: StateFlow<Int> = _remoteQueueSizeStateFlow
 
     // Remember last queue in case we need to (re)load on toggle
     private var lastQueue: List<Song> = emptyList()
@@ -43,7 +59,6 @@ class ChromecastManager @Inject constructor(@ApplicationContext context: Context
             super.onQueueStatusUpdated()
             val client = currentSession?.remoteMediaClient ?: return
             client.currentItem?.media?.metadata?.getInt(MediaMetadata.KEY_QUEUE_ITEM_ID)?.let { itemId ->
-                println("aaaa onQueueStatusUpdated $itemId")
                 lastStartIndex = lastQueue.indexOfFirst { s -> s.mediaId == itemId.toString() }
                 _currentQueueIndexStateFlow.value = lastStartIndex
             }
@@ -73,11 +88,12 @@ class ChromecastManager @Inject constructor(@ApplicationContext context: Context
 
         currentSession?.remoteMediaClient?.let { client ->
             client.registerCallback(remoteMediaCallback)
-            //client.mediaQueue.registerCallback(this)
         }
     }
 
     fun isConnected(): Boolean = currentSession?.isConnected == true
+
+    fun isPlaying() = currentSession?.remoteMediaClient?.isPlaying == true
 
     fun connect() {
         castContext.sessionManager.currentCastSession?.let { currentSession = it }
@@ -86,9 +102,14 @@ class ChromecastManager @Inject constructor(@ApplicationContext context: Context
 
     fun loadQueue(songs: List<Song>, startIndex: Int = 0) {
         if (startIndex < 0) return
+        if (songs.isEmpty()) return
+
+        println("aaaa new queue found ${songs.size} old: ${lastQueue.size}")
 
         lastQueue = songs
         lastStartIndex = startIndex
+
+        //val shouldAutoPlay = !isPlaying()
 
         val items = songs.map { song ->
             val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK).apply {
@@ -106,15 +127,12 @@ class ChromecastManager @Inject constructor(@ApplicationContext context: Context
 
             MediaQueueItem.Builder(mediaInfo)
                 .setAutoplay(true)
-                .setPreloadTime(5.0)
+                .setPreloadTime(15.0)
                 .build()
         }.toTypedArray()
 
         currentSession?.remoteMediaClient?.apply {
-            queueLoad(
-                items,
-                startIndex,
-                MediaStatus.REPEAT_MODE_REPEAT_OFF,
+            queueLoad(items, startIndex, MediaStatus.REPEAT_MODE_REPEAT_OFF,
                 null
             )
             registerCallback(remoteMediaCallback)

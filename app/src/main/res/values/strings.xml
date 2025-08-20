@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Power Ampache 2 Chromecast Plugin</string>
+    <string name="app_name">Chromecast Plugin (beta) for Power Ampache 2</string>
     <string name="app_name_topBar">Chromecast Queue - Power Ampache 2</string>
+    <string name="toast_noConnection_warning">Connect to Chromecast before playing music</string>
+    <string name="mainScreen_emptyQueue_title">Empty Queue</string>
+    <string name="mainScreen_emptyQueue_subtitle">Load a queue in Power Ampache 2 to start casting your music</string>
 </resources>
