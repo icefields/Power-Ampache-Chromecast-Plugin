@@ -23,12 +23,13 @@ package luci.sixsixsix.powerampache2.chromecastplugin
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import luci.sixsixsix.powerampache2.chromecastplugin.presentation.SongListScreen
 import luci.sixsixsix.powerampache2.chromecastplugin.presentation.delegates.BackPressHandler
 import luci.sixsixsix.powerampache2.chromecastplugin.presentation.delegates.BackPressHandlerImpl
-import luci.sixsixsix.powerampache2.chromecastplugin.presentation.theme.PowerAmpachePluginTheme
+import luci.sixsixsix.powerampache2.ui.theme.PowerAmpache2Theme
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity(), BackPressHandler by BackPressHandlerImpl() {
@@ -39,7 +40,10 @@ class MainActivity : FragmentActivity(), BackPressHandler by BackPressHandlerImp
         handleOnBackPressed(this)
 
         setContent {
-            PowerAmpachePluginTheme(dynamicColor = true) {
+            PowerAmpache2Theme(
+                darkTheme = true,
+                dynamicColor = false
+            ) {
                 SongListScreen()
             }
         }

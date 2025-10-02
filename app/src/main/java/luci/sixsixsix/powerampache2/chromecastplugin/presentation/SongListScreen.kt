@@ -22,43 +22,41 @@
 package luci.sixsixsix.powerampache2.chromecastplugin.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -78,6 +76,7 @@ val screenPadding
 
 val surfaceVariantLight = Color(0xFFDFE5E3)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -86,12 +85,12 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
     Scaffold(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.primary)
-            .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding())
-            .padding(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()),
+            .background(MaterialTheme.colorScheme.primary),
+            //.padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding())
+            //.padding(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()),
         topBar = {
             TopAppBar(
-                //backgroundColor = MaterialTheme.colors.primary,
+                modifier = Modifier.background(MaterialTheme.colorScheme.primary).statusBarsPadding(),
                 title = {
                     Text(
                         text = stringResource(R.string.app_name_topBar),
@@ -101,25 +100,28 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
                     )
                 },
                 actions = {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colors.secondary.copy(alpha = 0.5f),
-                        modifier = Modifier.wrapContentSize()
-                    ) {
+//                    Surface(
+//                        shape = CircleShape,
+//                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+//                        modifier = Modifier.wrapContentSize()
+//                    ) {
                         CastActionButton(viewModel.needsConnection())
                     }
-                }
+               // }
             )
         },
         bottomBar = {
             BottomAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
-                contentColor = MaterialTheme.colors.onSurface,
-                cutoutShape = null
+//                backgroundColor = MaterialTheme.colors.surface,
+//                contentColor = MaterialTheme.colors.onSurface,
+               // cutoutShape = null
             ) {
                 uiState.value.currentSong?.let { currentSong ->
-                    AsyncImage(currentSong.imageUrl, contentDescription = null)
-
+                    AsyncImage(
+                        modifier = Modifier.aspectRatio(1f).fillMaxHeight(),
+                        model = currentSong.imageUrl,
+                        contentDescription = currentSong.name
+                    )
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -128,31 +130,30 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
                     ) {
                         Text(
                             text = currentSong.name,
-                            style = MaterialTheme.typography.subtitle1,
+                            style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = currentSong.artist.name,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.titleSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                }
 
-
-                IconButton(onClick = { viewModel.prev() }) {
-                    Icon(Icons.Default.SkipPrevious, contentDescription = "Previous")
-                }
-                IconButton(onClick = { viewModel.togglePlayPause() }) {
-                    Icon(
-                        if (uiState.value.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (uiState.value.isPlaying) "Pause" else "Play"
-                    )
-                }
-                IconButton(onClick = { viewModel.next() }) {
-                    Icon(Icons.Default.SkipNext, contentDescription = "Next")
+                    IconButton(onClick = { viewModel.prev() }) {
+                        Icon(Icons.Default.SkipPrevious, contentDescription = "Previous")
+                    }
+                    IconButton(onClick = { viewModel.togglePlayPause() }) {
+                        Icon(
+                            if (uiState.value.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (uiState.value.isPlaying) "Pause" else "Play"
+                        )
+                    }
+                    IconButton(onClick = { viewModel.next() }) {
+                        Icon(Icons.Default.SkipNext, contentDescription = "Next")
+                    }
                 }
             }
         }
@@ -165,10 +166,10 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(stringResource(R.string.mainScreen_emptyQueue_title),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center)
                 Text(stringResource(R.string.mainScreen_emptyQueue_subtitle),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center)
             }
         }
@@ -177,23 +178,32 @@ fun SongListScreen(viewModel: ChromecastViewModel = hiltViewModel()) {
             items(queue.value) { song ->
                 Row(
                     modifier = Modifier
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .padding(vertical = 0.dp)
                         .fillMaxWidth()
                         .background(
                             if (uiState.value.currentIndex == queue.value.indexOf(song)) {
-                                colorResource(R.color.surfaceVariant)
+                                MaterialTheme.colorScheme.primaryContainer
                             } else { Color.Transparent }
                         )
                         .clickable { viewModel.playSong(song) }
                 ) {
                     AsyncImage(
                         song.imageUrl,
-                        modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f),
-                        contentDescription = null
+                        modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f).padding(4.dp),
+                        contentDescription = song.name
                     )
                     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                        Text(song.name, style = MaterialTheme.typography.body1)
-                        Text(song.artist.name, style = MaterialTheme.typography.caption)
+                        Text(
+                            modifier = Modifier.basicMarquee(),
+                            text = song.name,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            modifier = Modifier.basicMarquee(),
+                            text = song.artist.name,
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                 }
             }

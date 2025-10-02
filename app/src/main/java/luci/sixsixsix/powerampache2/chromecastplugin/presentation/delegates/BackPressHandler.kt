@@ -23,6 +23,7 @@ package luci.sixsixsix.powerampache2.chromecastplugin.presentation.delegates
 
 import androidx.fragment.app.FragmentActivity
 
+
 interface BackPressHandler {
     fun handleOnBackPressed(activity: FragmentActivity)
 }

@@ -1,21 +1,21 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
 
 android {
     namespace = "luci.sixsixsix.powerampache2.chromecastplugin"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "luci.sixsixsix.powerampache2.chromecastplugin"
         minSdk = 30
-        targetSdk = 35
-        versionCode = 2
-        versionName = "1.0"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":PowerAmpache2Theme"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -52,6 +53,7 @@ dependencies {
     implementation(libs.androidx.activity.compose) // Required for setContent
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.compose.material3)
 
     // JSON serialization
     implementation(libs.gson)

@@ -78,15 +78,23 @@ class ChromecastViewModel @Inject constructor(
         viewModelScope.launch {
             chromecastManager.currentQueueIndexStateFlow.collectLatest { index ->
                 _uiState.value = _uiState.value.copy(
-                    currentIndex = index,
-                    currentSong = queueStateFlow.value.getOrNull(index)
+                    currentIndex = index.takeIf { it >= 0 } ?: 0,
+                    currentSong = queueStateFlow.value.getOrNull(index) ?: _uiState.value.currentSong
+                        .also { println("aaaa queueStateFlow.value.getOrNull 83 ${it?.name ?: "NULL"}   index $index") }
                 )
             }
         }
 
         // observe queue changes
         viewModelScope.launch {
-            queueStateFlow.collectLatest { loadQueue() }
+            queueStateFlow.collectLatest {
+                _uiState.value = _uiState.value.copy(
+                    currentIndex = 0,
+                    currentSong = it.getOrNull(0)
+                        .also { println("aaaa queueStateFlow.value.getOrNull 94 ${it?.name ?: "NULL"}") }
+                )
+                loadQueue()
+            }
         }
     }
 
